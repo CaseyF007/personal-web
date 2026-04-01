@@ -4,6 +4,7 @@
   "private": true,
   "description": "Casey's personal website — Embedded Prompt Engineer",
   "scripts": {
+    "build": "node scripts/build-index.js",
     "build:index": "node scripts/build-index.js",
     "dev": "npx serve"
   }
