@@ -1,0 +1,34 @@
+[
+  {
+    "title": "CCVIT — 轻量化 CNN-Transformer 混合模型",
+    "description": "面向 STM32H743 微控制器设计的轻量化视觉模型，结合 CNN 的局部特征提取能力与 Transformer 的全局注意力机制，在严格的内存和算力约束下实现高效推理。采用自研 CSA 注意力机制，通过 INT8 量化部署到 MCU 平台。",
+    "tags": ["深度学习", "嵌入式", "模型优化"],
+    "icon": "🧠",
+    "gradient": "rgba(59,130,246,0.2), rgba(139,92,246,0.2)",
+    "github": "#",
+    "paper": "#"
+  },
+  {
+    "title": "CSA 注意力机制",
+    "description": "一种为资源受限硬件设计的高效自注意力机制。通过通道分离与稀疏注意力策略，在保持模型表达能力的同时大幅降低计算复杂度（FLOPs），适合部署在 MCU 等边缘设备上。",
+    "tags": ["深度学习", "模型优化"],
+    "icon": "⚡",
+    "gradient": "rgba(6,182,212,0.2), rgba(59,130,246,0.2)",
+    "github": "#"
+  },
+  {
+    "title": "MCU 模型部署工具链",
+    "description": "基于 STM32CubeMX.AI 和 TFLite Micro 的模型部署流水线。涵盖模型转换（PyTorch → ONNX → TFLite）、INT8 量化、内存分析与硬件在环（HIL）性能验证的完整工作流。",
+    "tags": ["嵌入式", "工具"],
+    "icon": "🔧",
+    "gradient": "rgba(139,92,246,0.2), rgba(236,72,153,0.2)",
+    "github": "#"
+  },
+  {
+    "title": "Prompt 工程实践集",
+    "description": "收集和整理在研究与开发过程中积累的 Prompt 工程最佳实践。包括代码生成、论文写作辅助、数据分析等场景的提示词模板与技巧。",
+    "tags": ["Prompt", "工具"],
+    "icon": "💡",
+    "gradient": "rgba(245,158,11,0.2), rgba(239,68,68,0.2)"
+  }
+]

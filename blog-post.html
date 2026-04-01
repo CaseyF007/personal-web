@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章 — Casey</title>
+  <meta name="theme-color" content="#0a0e1a">
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/blog.css">
+  <!-- Marked.js for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a class="nav-logo" href="index.html">Casey</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="index.html#about">关于</a></li>
+        <li><a href="index.html#projects">项目</a></li>
+        <li><a href="blog.html" class="active">博客</a></li>
+        <li><a href="index.html#contact">联系</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">
+          <span class="theme-icon">🌙</span>
+        </button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="打开菜单">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Post Header -->
+  <header class="blog-post-header" id="post-header">
+    <div class="container">
+      <div class="blog-post-meta" id="post-meta">
+        <!-- date · reading time -->
+      </div>
+      <h1 id="post-title">加载中...</h1>
+      <div class="blog-post-tags" id="post-tags"></div>
+    </div>
+  </header>
+
+  <!-- Post Content -->
+  <main class="blog-post-content">
+    <div class="container">
+      <article class="markdown-body" id="post-content">
+        <!-- Rendered from Markdown -->
+      </article>
+      <div class="blog-post-nav">
+        <a href="blog.html">← 返回博客列表</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 Casey. All rights reserved.</p>
+        <p style="font-family: var(--font-mono); font-size: var(--fs-xs);">Code is cheap. Show me your prompt.</p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="back-to-top" aria-label="回到顶部">↑</button>
+
+  <script>
+    // Load blog post from URL parameter
+    (async function() {
+      const params = new URLSearchParams(window.location.search);
+      const postId = params.get('post');
+      if (!postId) { window.location.href = 'blog.html'; return; }
+
+      try {
+        const res = await fetch(`data/posts/${postId}.json`);
+        if (!res.ok) throw new Error('Post not found');
+        const post = await res.json();
+
+        // Update page
+        document.title = `${post.title} — Casey`;
+        document.getElementById('post-title').textContent = post.title;
+        document.getElementById('post-meta').innerHTML =
+          `<span>${post.date}</span><span class="dot" style="width:3px;height:3px;border-radius:50%;background:var(--text-tertiary);display:inline-block;margin:0 8px;vertical-align:middle;"></span><span>${post.readTime || '5 分钟阅读'}</span>`;
+        document.getElementById('post-tags').innerHTML =
+          post.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+        // Render markdown content
+        if (typeof marked !== 'undefined') {
+          document.getElementById('post-content').innerHTML = marked.parse(post.content);
+        } else {
+          // Fallback: simple rendering
+          document.getElementById('post-content').innerHTML =
+            post.content.replace(/\n/g, '<br>');
+        }
+      } catch (e) {
+        document.getElementById('post-title').textContent = '文章未找到';
+        document.getElementById('post-content').innerHTML =
+          '<p style="text-align:center;color:var(--text-tertiary);">抱歉，该文章不存在或已被移除。</p>';
+      }
+    })();
+  </script>
+  <script src="js/main.js"></script>
+</body>
+</html>
