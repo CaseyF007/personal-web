@@ -173,6 +173,9 @@
 
 @media (max-width: 480px) { .project-grid { grid-template-columns: 1fr; } }
 
+/* ---------- Blog Preview Section (Homepage) ---------- */
+.blog-preview { background: var(--bg-secondary); }
+
 /* ---------- Contact Section ---------- */
 .contact { background: var(--bg-secondary); }
 .contact-grid {

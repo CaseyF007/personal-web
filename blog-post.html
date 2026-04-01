@@ -73,6 +73,32 @@
   <button class="back-to-top" id="back-to-top" aria-label="回到顶部">↑</button>
 
   <script>
+    /**
+     * 解析 Markdown 文件的 YAML frontmatter
+     */
+    function parseFrontmatter(raw) {
+      const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+      if (!match) return { meta: {}, content: raw };
+
+      const meta = {};
+      for (const line of match[1].split('\n')) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const idx = trimmed.indexOf(':');
+        if (idx === -1) continue;
+        const key = trimmed.slice(0, idx).trim();
+        let val = trimmed.slice(idx + 1).trim();
+        if (val.startsWith('[') && val.endsWith(']')) {
+          val = val.slice(1, -1).split(',').map(s => s.trim().replace(/^["']|["']$/g, ''));
+        } else if ((val.startsWith('"') && val.endsWith('"')) ||
+                   (val.startsWith("'") && val.endsWith("'"))) {
+          val = val.slice(1, -1);
+        }
+        meta[key] = val;
+      }
+      return { meta, content: match[2] };
+    }
+
     // Load blog post from URL parameter
     (async function() {
       const params = new URLSearchParams(window.location.search);
@@ -80,25 +106,26 @@
       if (!postId) { window.location.href = 'blog.html'; return; }
 
       try {
-        const res = await fetch(`data/posts/${postId}.json`);
+        const res = await fetch(`data/posts/${postId}.md`);
         if (!res.ok) throw new Error('Post not found');
-        const post = await res.json();
+        const raw = await res.text();
+        const { meta, content } = parseFrontmatter(raw);
 
         // Update page
-        document.title = `${post.title} — Casey`;
-        document.getElementById('post-title').textContent = post.title;
+        document.title = `${meta.title || postId} — Casey`;
+        document.getElementById('post-title').textContent = meta.title || postId;
         document.getElementById('post-meta').innerHTML =
-          `<span>${post.date}</span><span class="dot" style="width:3px;height:3px;border-radius:50%;background:var(--text-tertiary);display:inline-block;margin:0 8px;vertical-align:middle;"></span><span>${post.readTime || '5 分钟阅读'}</span>`;
+          `<span>${meta.date || ''}</span><span class="dot" style="width:3px;height:3px;border-radius:50%;background:var(--text-tertiary);display:inline-block;margin:0 8px;vertical-align:middle;"></span><span>${meta.readTime || '5 分钟阅读'}</span>`;
+        const tags = Array.isArray(meta.tags) ? meta.tags : [];
         document.getElementById('post-tags').innerHTML =
-          post.tags.map(t => `<span class="tag">${t}</span>`).join('');
+          tags.map(t => `<span class="tag">${t}</span>`).join('');
 
         // Render markdown content
         if (typeof marked !== 'undefined') {
-          document.getElementById('post-content').innerHTML = marked.parse(post.content);
+          document.getElementById('post-content').innerHTML = marked.parse(content);
         } else {
-          // Fallback: simple rendering
           document.getElementById('post-content').innerHTML =
-            post.content.replace(/\n/g, '<br>');
+            content.replace(/\n/g, '<br>');
         }
       } catch (e) {
         document.getElementById('post-title').textContent = '文章未找到';

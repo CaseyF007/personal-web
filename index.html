@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/sections.css">
+  <link rel="stylesheet" href="css/blog.css">
 </head>
 <body>
   <!-- ========== NAVIGATION ========== -->
@@ -141,6 +142,20 @@
     </div>
   </section>
 
+  <!-- ========== BLOG PREVIEW ========== -->
+  <section id="blog" class="section blog-preview">
+    <div class="container">
+      <h2 class="section-title reveal">最新博客</h2>
+      <p class="section-subtitle reveal">记录学习、思考与实践</p>
+      <div class="blog-grid stagger-children" id="blog-preview-grid">
+        <!-- Populated by JS -->
+      </div>
+      <div class="blog-preview-cta reveal" style="text-align: center; margin-top: var(--space-10);">
+        <a href="blog.html" class="btn btn-outline">查看全部文章 →</a>
+      </div>
+    </div>
+  </section>
+
   <!-- ========== CONTACT ========== -->
   <section id="contact" class="section contact">
     <div class="container">
@@ -219,6 +234,40 @@
   <script src="js/particles.js"></script>
   <script src="js/projects.js"></script>
   <script src="js/contact.js"></script>
+  <script>
+    // Blog preview — load latest posts on homepage
+    (async function() {
+      try {
+        const res = await fetch('data/posts/posts-index.json');
+        const posts = await res.json();
+        const grid = document.getElementById('blog-preview-grid');
+        if (!grid) return;
+
+        const latest = posts.slice(0, 3);
+        grid.innerHTML = latest.map(p => `
+          <a href="blog-post.html?post=${p.id}" class="card blog-card hover-lift" style="text-decoration:none;">
+            <div class="blog-card-image">
+              <span class="blog-icon">${p.icon || '📝'}</span>
+            </div>
+            <div class="blog-card-body">
+              <div class="blog-card-meta">
+                <span>${p.date}</span>
+                <span class="dot"></span>
+                <span>${p.readTime || '5 分钟阅读'}</span>
+              </div>
+              <h3>${p.title}</h3>
+              <p>${p.excerpt}</p>
+              <div class="blog-card-footer">
+                ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+              </div>
+            </div>
+          </a>
+        `).join('');
+      } catch (e) {
+        console.warn('Failed to load blog preview:', e);
+      }
+    })();
+  </script>
   <script src="js/main.js"></script>
 </body>
 </html>
