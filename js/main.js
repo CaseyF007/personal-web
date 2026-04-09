@@ -166,19 +166,33 @@
   /* ---- Active Nav Link on Scroll ---- */
   function initNavActiveState() {
     const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+    const navLinks = document.querySelectorAll('.nav-links a');
     if (!sections.length || !navLinks.length) return;
 
     window.addEventListener('scroll', () => {
       let current = '';
+      // 使用视口中心点判定当前板块，解决大板块内切换滞后的问题
+      const viewportCenter = window.scrollY + window.innerHeight / 2;
       sections.forEach(section => {
-        const top = section.offsetTop - 100;
-        if (window.scrollY >= top) current = section.id;
+        const top = section.offsetTop;
+        const bottom = top + section.offsetHeight;
+        if (viewportCenter >= top && viewportCenter < bottom) {
+          current = section.id;
+        }
       });
+      // 如果滚动到页面底部，强制激活最后一个板块
+      if (!current && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+        current = sections[sections.length - 1].id;
+      }
+      // 如果仍然没有匹配（可能在页面最顶部），使用第一个板块
+      if (!current) current = sections[0].id;
 
       navLinks.forEach(link => {
         link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
+        const href = link.getAttribute('href');
+        if (href === `#${current}`) {
+          link.classList.add('active');
+        } else if (current === 'blog' && href === 'blog.html') {
           link.classList.add('active');
         }
       });
