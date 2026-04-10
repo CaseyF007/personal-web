@@ -32,7 +32,6 @@
   let txByteCount = 0;
 
   // UI 元素
-  const btnConnect = document.getElementById('btn-connect');
   const btnSend = document.getElementById('btn-send');
   const btnClearRx = document.getElementById('btn-clear-rx');
   const txInput = document.getElementById('tx-input');
