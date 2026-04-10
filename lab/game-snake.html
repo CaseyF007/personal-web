@@ -72,9 +72,22 @@
         <p style="color: var(--text-tertiary); font-size: var(--fs-sm); text-align: center;">
           使用 ← ↑ → ↓ 方向键控制 · 每吃 5 个食物升一级
         </p>
+
+        <!-- 排行榜 -->
+        <div class="leaderboard" id="leaderboard">
+          <h3 class="leaderboard-title">🏆 排行榜 TOP 5</h3>
+          <div id="leaderboard-content"></div>
+        </div>
       </div>
     </div>
   </main>
+
+  <!-- 排名提醒 Toast -->
+  <div class="rank-toast" id="rank-toast">
+    <div class="rank-toast-icon" id="rank-toast-icon">🎉</div>
+    <div class="rank-toast-title" id="rank-toast-title">恭喜上榜！</div>
+    <div class="rank-toast-detail" id="rank-toast-detail"></div>
+  </div>
 
   <footer class="footer">
     <div class="container">

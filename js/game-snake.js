@@ -1,6 +1,7 @@
 /**
  * 贪吃蛇游戏 — 电路板 PCB 主题
  * Canvas 渲染，键盘 + 触摸支持
+ * 含排行榜系统（TOP 5）
  */
 (function () {
   const canvas = document.getElementById('snake-canvas');
@@ -49,6 +50,95 @@
   const btnStart = document.getElementById('btn-start');
 
   bestEl.textContent = bestScore;
+
+  // ========== 排行榜系统 ==========
+  const LEADERBOARD_KEY = 'leaderboard_snake';
+  const MAX_RANK = 5;
+
+  // 从 localStorage 读取排行榜
+  function getLeaderboard() {
+    try {
+      return JSON.parse(localStorage.getItem(LEADERBOARD_KEY)) || [];
+    } catch { return []; }
+  }
+
+  // 保存排行榜到 localStorage
+  function saveLeaderboard(board) {
+    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board));
+  }
+
+  // 检查分数是否能进入排行榜，返回排名位置（1-based），不能进入则返回 -1
+  function checkRank(newScore) {
+    if (newScore <= 0) return -1;
+    const board = getLeaderboard();
+    if (board.length < MAX_RANK) return board.filter(e => e.score >= newScore).length + 1;
+    if (newScore > board[board.length - 1].score) {
+      return board.filter(e => e.score >= newScore).length + 1;
+    }
+    return -1;
+  }
+
+  // 将分数插入排行榜
+  function insertScore(newScore) {
+    const board = getLeaderboard();
+    const entry = {
+      score: newScore,
+      date: new Date().toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+    };
+    board.push(entry);
+    board.sort((a, b) => b.score - a.score);
+    const trimmed = board.slice(0, MAX_RANK);
+    saveLeaderboard(trimmed);
+    // 返回此 entry 在排行榜中的索引（0-based）
+    return trimmed.findIndex(e => e === entry);
+  }
+
+  // 渲染排行榜 UI
+  function renderLeaderboard(highlightIndex) {
+    const container = document.getElementById('leaderboard-content');
+    const board = getLeaderboard();
+
+    if (board.length === 0) {
+      container.innerHTML = '<p class="leaderboard-empty">暂无记录，快来挑战吧！</p>';
+      return;
+    }
+
+    const rankIcons = ['🥇', '🥈', '🥉', '4', '5'];
+    let html = `<table class="leaderboard-table">
+      <thead><tr><th>排名</th><th>分数</th><th class="date-cell">时间</th></tr></thead><tbody>`;
+
+    board.forEach((entry, i) => {
+      const isHighlight = i === highlightIndex;
+      html += `<tr${isHighlight ? ' class="highlight"' : ''}>
+        <td class="rank-cell">${rankIcons[i] || i + 1}</td>
+        <td class="score-cell">${entry.score}</td>
+        <td class="date-cell">${entry.date || '-'}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+
+  // 显示排名 Toast 提醒
+  function showRankToast(rank) {
+    const toast = document.getElementById('rank-toast');
+    const iconEl = document.getElementById('rank-toast-icon');
+    const titleEl = document.getElementById('rank-toast-title');
+    const detailEl = document.getElementById('rank-toast-detail');
+
+    const icons = { 1: '🥇', 2: '🥈', 3: '🥉' };
+    iconEl.textContent = icons[rank] || '🎉';
+    titleEl.textContent = rank <= 3 ? `恭喜获得第 ${rank} 名！` : '恭喜进入排行榜！';
+    detailEl.textContent = `得分 ${score} · 排名 #${rank}`;
+
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+
+  // 页面加载时渲染排行榜
+  renderLeaderboard(-1);
+  // ========== 排行榜系统结束 ==========
 
   // 初始化游戏
   function init() {
@@ -250,6 +340,16 @@
       bestEl.textContent = bestScore;
     }
 
+    // 排行榜处理
+    const rank = checkRank(score);
+    let highlightIdx = -1;
+    if (rank !== -1) {
+      highlightIdx = insertScore(score);
+      // 延迟显示 Toast，让 Game Over 画面先展示
+      setTimeout(() => showRankToast(rank), 800);
+    }
+    renderLeaderboard(highlightIdx);
+
     // 闪烁效果然后显示 Game Over
     ctx.fillStyle = 'rgba(10,14,26,0.7)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -346,3 +446,5 @@
   // 初始绘制
   init();
 })();
+
+
