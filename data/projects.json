@@ -1,34 +1,47 @@
 [
   {
-    "title": "CCVIT — 轻量化 CNN-Transformer 混合模型",
-    "description": "面向 STM32H743 微控制器设计的轻量化视觉模型，结合 CNN 的局部特征提取能力与 Transformer 的全局注意力机制，在严格的内存和算力约束下实现高效推理。采用自研 CSA 注意力机制，通过 INT8 量化部署到 MCU 平台。",
-    "tags": ["深度学习", "嵌入式", "模型优化"],
-    "icon": "🧠",
-    "gradient": "rgba(59,130,246,0.2), rgba(139,92,246,0.2)",
-    "github": "#",
-    "paper": "#"
+    "title": "Flipper Zero — 多功能硬件安全工具",
+    "description": "基于 STM32 的开源多功能硬件安全设备固件。集成 Sub-GHz 无线、RFID、NFC、红外、蓝牙等多种协议于一体，支持自定义应用开发。被称为「硬件黑客的瑞士军刀」，GitHub ⭐ 15.8k。",
+    "tags": ["嵌入式", "STM32", "安全"],
+    "icon": "🐬",
+    "gradient": "rgba(255,107,53,0.2), rgba(255,165,0,0.2)",
+    "github": "https://github.com/flipperdevices/flipperzero-firmware",
+    "demo": "https://flipperzero.one"
   },
   {
-    "title": "CSA 注意力机制",
-    "description": "一种为资源受限硬件设计的高效自注意力机制。通过通道分离与稀疏注意力策略，在保持模型表达能力的同时大幅降低计算复杂度（FLOPs），适合部署在 MCU 等边缘设备上。",
-    "tags": ["深度学习", "模型优化"],
-    "icon": "⚡",
-    "gradient": "rgba(6,182,212,0.2), rgba(59,130,246,0.2)",
-    "github": "#"
-  },
-  {
-    "title": "MCU 模型部署工具链",
-    "description": "基于 STM32CubeMX.AI 和 TFLite Micro 的模型部署流水线。涵盖模型转换（PyTorch → ONNX → TFLite）、INT8 量化、内存分析与硬件在环（HIL）性能验证的完整工作流。",
-    "tags": ["嵌入式", "工具"],
-    "icon": "🔧",
-    "gradient": "rgba(139,92,246,0.2), rgba(236,72,153,0.2)",
-    "github": "#"
-  },
-  {
-    "title": "Prompt 工程实践集",
-    "description": "收集和整理在研究与开发过程中积累的 Prompt 工程最佳实践。包括代码生成、论文写作辅助、数据分析等场景的提示词模板与技巧。",
-    "tags": ["Prompt", "工具"],
+    "title": "WLED — WiFi LED 灯带控制器",
+    "description": "基于 ESP32/ESP8266 的开源 RGB LED 灯带控制固件。支持 WS2812B 等多种灯珠，内置 100+ 灯效和 50+ 调色板，提供现代化 Web UI、手机 App 控制、Alexa 语音控制及 MQTT 等丰富接口。GitHub ⭐ 17.8k。",
+    "tags": ["嵌入式", "ESP32", "IoT"],
     "icon": "💡",
-    "gradient": "rgba(245,158,11,0.2), rgba(239,68,68,0.2)"
+    "gradient": "rgba(139,92,246,0.2), rgba(236,72,153,0.2)",
+    "github": "https://github.com/Aircoookie/WLED",
+    "demo": "https://kno.wled.ge"
+  },
+  {
+    "title": "Betaflight — 开源飞控固件",
+    "description": "面向多旋翼和固定翼飞行器的高性能开源飞行控制器固件。支持 STM32 F4/F7/H7 系列处理器，集成 DShot 电调协议、OSD 叠加、黑盒飞行记录、多种遥测协议和 PID 在线调参功能。GitHub ⭐ 10.8k。",
+    "tags": ["嵌入式", "STM32", "飞控"],
+    "icon": "🛸",
+    "gradient": "rgba(59,130,246,0.2), rgba(6,182,212,0.2)",
+    "github": "https://github.com/betaflight/betaflight",
+    "demo": "https://betaflight.com"
+  },
+  {
+    "title": "Meshtastic — LoRa 离网 Mesh 通信",
+    "description": "开源的 LoRa 网状网络通信系统固件，无需互联网或蜂窝网络即可实现远距离、低功耗的文字通讯、位置共享和遥测数据传输。支持 ESP32、nRF52、RP2040 等多种硬件平台，适合户外探险和应急通信。GitHub ⭐ 7.2k。",
+    "tags": ["嵌入式", "ESP32", "通信"],
+    "icon": "📡",
+    "gradient": "rgba(16,185,129,0.2), rgba(59,130,246,0.2)",
+    "github": "https://github.com/meshtastic/firmware",
+    "demo": "https://meshtastic.org"
+  },
+  {
+    "title": "ESPHome — 智能家居固件系统",
+    "description": "通过简洁的 YAML 配置文件即可为 ESP32/ESP8266/RP2040 生成定制固件的智能家居集成框架。无需编写代码，即可对接 Home Assistant 等家庭自动化平台，支持数百种传感器和执行器，实现远程监控与自动化控制。",
+    "tags": ["嵌入式", "ESP32", "IoT"],
+    "icon": "🏠",
+    "gradient": "rgba(245,158,11,0.2), rgba(239,68,68,0.2)",
+    "github": "https://github.com/esphome/esphome",
+    "demo": "https://esphome.io"
   }
 ]
