@@ -1,26 +1,25 @@
 /**
  * 串口在线调试 — Web Serial API 封装
+ * 修复：数据接收显示、设备断开重连处理
  */
 (function () {
   const noticeEl = document.getElementById('compat-notice');
-  const btnConnect = document.getElementById('btn-connect');
+  const btnConnectEl = document.getElementById('btn-connect');
 
   // 检测浏览器兼容性（Web Serial API 需要安全上下文 HTTPS）
   if (!('serial' in navigator)) {
     let message;
     if (!window.isSecureContext) {
-      // 通过 HTTP 访问时无法使用
       message = '<strong>当前为非安全连接（HTTP）</strong><br>' +
         'Web Serial API 需要通过 <strong>HTTPS</strong> 访问才能使用。' +
         '请使用 <code>https://</code> 地址访问此页面，或在本地使用 <code>localhost</code>。';
     } else {
-      // 浏览器本身不支持
       message = '<strong>浏览器不支持 Web Serial API</strong><br>' +
         '请使用 Chrome 89+ 或 Edge 89+ 浏览器访问此工具。';
     }
     noticeEl.querySelector('div').innerHTML = message;
     noticeEl.style.display = 'flex';
-    btnConnect.disabled = true;
+    btnConnectEl.disabled = true;
     return;
   }
 
@@ -30,6 +29,7 @@
   let isConnected = false;
   let rxByteCount = 0;
   let txByteCount = 0;
+  let keepReading = false; // 控制读取循环的标志
 
   // UI 元素
   const btnSend = document.getElementById('btn-send');
@@ -42,7 +42,7 @@
   const txCount = document.getElementById('tx-count');
 
   // 连接 / 断开
-  btnConnect.addEventListener('click', async () => {
+  btnConnectEl.addEventListener('click', async () => {
     if (isConnected) {
       await disconnect();
     } else {
@@ -61,36 +61,79 @@
       await port.open({ baudRate, dataBits, stopBits, parity });
 
       isConnected = true;
+      keepReading = true;
       updateStatus(true);
       btnSend.disabled = false;
 
-      writer = port.writable.getWriter();
+      appendToTerminal(`--- 串口已连接 (${baudRate}bps) ---`, 'sys');
 
-      // 开始读取
+      // 监听设备断开事件
+      port.addEventListener('disconnect', onPortDisconnect);
+
+      // 启动读取循环
       readLoop();
-
-      appendToTerminal('--- 串口已连接 ---', 'sys');
     } catch (err) {
+      if (err.name === 'NotFoundError') {
+        // 用户取消了串口选择
+        return;
+      }
       appendToTerminal(`连接失败: ${err.message}`, 'err');
     }
   }
 
+  // 设备意外断开（如 USB 拔出、MCU Reset）
+  function onPortDisconnect() {
+    appendToTerminal('--- 设备已断开（USB 拔出或设备重启） ---', 'err');
+    cleanupConnection();
+  }
+
+  // 清理连接资源（不尝试关闭端口，因为端口可能已失效）
+  function cleanupConnection() {
+    keepReading = false;
+
+    if (reader) {
+      try { reader.releaseLock(); } catch (e) { /* 忽略 */ }
+      reader = null;
+    }
+    if (writer) {
+      try { writer.releaseLock(); } catch (e) { /* 忽略 */ }
+      writer = null;
+    }
+
+    isConnected = false;
+    updateStatus(false);
+    btnSend.disabled = true;
+    port = null;
+  }
+
+  // 主动断开连接
   async function disconnect() {
-    try {
-      if (reader) {
+    keepReading = false;
+
+    // 先取消正在进行的读取
+    if (reader) {
+      try {
         await reader.cancel();
-        reader = null;
-      }
-      if (writer) {
+      } catch (e) { /* 忽略 */ }
+      // cancel() 完成后，readLoop 中的 read() 会返回 { done: true }
+      // releaseLock 在 readLoop 的 finally 中处理
+    }
+
+    // 释放写入器
+    if (writer) {
+      try {
         writer.releaseLock();
-        writer = null;
-      }
-      if (port) {
+      } catch (e) { /* 忽略 */ }
+      writer = null;
+    }
+
+    // 关闭端口
+    if (port) {
+      try {
+        port.removeEventListener('disconnect', onPortDisconnect);
         await port.close();
-        port = null;
-      }
-    } catch (err) {
-      // 忽略关闭错误
+      } catch (e) { /* 忽略 */ }
+      port = null;
     }
 
     isConnected = false;
@@ -101,20 +144,31 @@
 
   // 持续读取串口数据
   async function readLoop() {
-    while (port && port.readable) {
-      reader = port.readable.getReader();
+    while (keepReading && port && port.readable) {
       try {
-        while (true) {
+        reader = port.readable.getReader();
+      } catch (err) {
+        appendToTerminal(`无法获取读取器: ${err.message}`, 'err');
+        break;
+      }
+
+      try {
+        while (keepReading) {
           const { value, done } = await reader.read();
-          if (done) break;
-          if (value) {
+          if (done) {
+            // reader 被取消（disconnect 调用 reader.cancel()）
+            break;
+          }
+          if (value && value.length > 0) {
             rxByteCount += value.length;
             rxCount.textContent = rxByteCount;
 
             const displayMode = document.getElementById('rx-display-mode').value;
             let text;
             if (displayMode === 'hex') {
-              text = Array.from(value).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+              text = Array.from(value).map(b =>
+                b.toString(16).toUpperCase().padStart(2, '0')
+              ).join(' ');
             } else {
               text = new TextDecoder().decode(value);
             }
@@ -122,13 +176,23 @@
           }
         }
       } catch (err) {
-        if (isConnected) {
+        // 设备断开或读取出错
+        if (keepReading) {
           appendToTerminal(`读取错误: ${err.message}`, 'err');
         }
       } finally {
-        reader.releaseLock();
+        // 确保释放读取器锁
+        try {
+          reader.releaseLock();
+        } catch (e) { /* 忽略 */ }
         reader = null;
       }
+    }
+
+    // 如果是意外退出循环（非主动断开），清理状态
+    if (keepReading && isConnected) {
+      appendToTerminal('--- 数据流已中断，请重新连接 ---', 'err');
+      cleanupConnection();
     }
   }
 
@@ -139,7 +203,7 @@
   });
 
   async function sendData() {
-    if (!isConnected || !writer) return;
+    if (!isConnected || !port || !port.writable) return;
     const raw = txInput.value;
     if (!raw) return;
 
@@ -165,18 +229,24 @@
       data = new TextEncoder().encode(str);
     }
 
+    // 每次发送时获取新的 writer，避免锁冲突
+    let w;
     try {
-      await writer.write(data);
+      w = port.writable.getWriter();
+      await w.write(data);
       txByteCount += data.length;
       txCount.textContent = txByteCount;
 
-      // 在终端显示发送的数据
       const displayText = txMode === 'hex'
         ? Array.from(data).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ')
         : raw;
       appendToTerminal(displayText, 'tx');
     } catch (err) {
       appendToTerminal(`发送失败: ${err.message}`, 'err');
+    } finally {
+      if (w) {
+        try { w.releaseLock(); } catch (e) { /* 忽略 */ }
+      }
     }
   }
 
@@ -188,17 +258,22 @@
     let prefix = '';
     if (showTimestamp) {
       const now = new Date();
-      const ts = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
+      const ts = now.toTimeString().split(' ')[0] + '.' +
+        String(now.getMilliseconds()).padStart(3, '0');
       prefix = `<span class="timestamp">[${ts}]</span> `;
     }
 
-    const typeLabel = type === 'tx' ? '<span class="tx">TX → </span>' :
-                      type === 'rx' ? '<span class="rx">RX ← </span>' :
-                      type === 'err' ? '<span class="err">ERR  </span>' :
-                      '<span class="sys">SYS  </span>';
+    const typeLabel =
+      type === 'tx'  ? '<span class="tx">TX → </span>' :
+      type === 'rx'  ? '<span class="rx">RX ← </span>' :
+      type === 'err' ? '<span class="err">ERR  </span>' :
+                        '<span class="sys">SYS  </span>';
 
     // 对文本内容进行 HTML 转义
-    const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const escaped = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
 
     rxTerminal.innerHTML += prefix + typeLabel + escaped + '\n';
 
@@ -212,8 +287,8 @@
     statusDot.className = 'status-dot ' + (connected ? 'connected' : 'disconnected');
     statusText.textContent = connected ? '已连接' : '未连接';
     statusText.style.color = connected ? '#7ee787' : 'var(--text-tertiary)';
-    btnConnect.textContent = connected ? '断开' : '连接';
-    btnConnect.className = connected
+    btnConnectEl.textContent = connected ? '断开' : '连接';
+    btnConnectEl.className = connected
       ? 'btn btn-outline btn-sm'
       : 'btn btn-primary btn-sm';
   }
