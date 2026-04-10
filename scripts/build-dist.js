@@ -16,10 +16,12 @@ const INCLUDE = [
   'index.html',
   'blog.html',
   'blog-post.html',
+  'lab.html',
   'css',
   'js',
   'assets',
   'data',
+  'lab',
 ];
 
 /**
