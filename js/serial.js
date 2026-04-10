@@ -2,10 +2,25 @@
  * 串口在线调试 — Web Serial API 封装
  */
 (function () {
-  // 检测浏览器兼容性
+  const noticeEl = document.getElementById('compat-notice');
+  const btnConnect = document.getElementById('btn-connect');
+
+  // 检测浏览器兼容性（Web Serial API 需要安全上下文 HTTPS）
   if (!('serial' in navigator)) {
-    document.getElementById('compat-notice').style.display = 'flex';
-    document.getElementById('btn-connect').disabled = true;
+    let message;
+    if (!window.isSecureContext) {
+      // 通过 HTTP 访问时无法使用
+      message = '<strong>当前为非安全连接（HTTP）</strong><br>' +
+        'Web Serial API 需要通过 <strong>HTTPS</strong> 访问才能使用。' +
+        '请使用 <code>https://</code> 地址访问此页面，或在本地使用 <code>localhost</code>。';
+    } else {
+      // 浏览器本身不支持
+      message = '<strong>浏览器不支持 Web Serial API</strong><br>' +
+        '请使用 Chrome 89+ 或 Edge 89+ 浏览器访问此工具。';
+    }
+    noticeEl.querySelector('div').innerHTML = message;
+    noticeEl.style.display = 'flex';
+    btnConnect.disabled = true;
     return;
   }
 

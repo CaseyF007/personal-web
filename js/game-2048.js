@@ -1,5 +1,5 @@
 /**
- * 2048 游戏核心逻辑
+ * 2048 游戏核心逻辑 — 带过渡动画
  */
 (function () {
   const SIZE = 4;
@@ -7,6 +7,10 @@
   let score = 0;
   let bestScore = parseInt(localStorage.getItem('best2048') || '0');
   let gameOver = false;
+
+  // 跟踪新增和合并的位置，用于动画
+  let newTiles = new Set();
+  let mergedTiles = new Set();
 
   // 颜色映射 — 使用网站设计系统配色
   const TILE_COLORS = {
@@ -35,6 +39,8 @@
     grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
     score = 0;
     gameOver = false;
+    newTiles.clear();
+    mergedTiles.clear();
     overlayEl.classList.remove('active');
     addRandomTile();
     addRandomTile();
@@ -53,6 +59,7 @@
     if (empty.length === 0) return;
     const [r, c] = empty[Math.floor(Math.random() * empty.length)];
     grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+    newTiles.add(`${r},${c}`);
   }
 
   // 渲染网格
@@ -72,9 +79,25 @@
         if (val >= 1024) tile.style.fontSize = 'var(--fs-lg)';
         else if (val >= 128) tile.style.fontSize = 'var(--fs-xl)';
 
+        // 动画 class
+        const key = `${r},${c}`;
+        if (newTiles.has(key)) {
+          tile.classList.add('tile-new');
+        }
+        if (mergedTiles.has(key)) {
+          tile.classList.add('tile-merged');
+        }
+        // 高数值发光
+        if (val >= 512) {
+          tile.classList.add('tile-glow');
+        }
+
         gridEl.appendChild(tile);
       }
     }
+    // 清除动画标记
+    newTiles.clear();
+    mergedTiles.clear();
   }
 
   function updateScore() {
@@ -86,16 +109,18 @@
     bestEl.textContent = bestScore;
   }
 
-  // 滑动逻辑：将一行压缩合并
-  function slideRow(row) {
+  // 滑动逻辑：将一行压缩合并，同时追踪合并位置
+  function slideRow(row, rowIndex, isVertical, isReverse) {
     let arr = row.filter(v => v !== 0);
     let merged = [];
     let points = 0;
+    let mergePositions = [];
 
     for (let i = 0; i < arr.length; i++) {
       if (i + 1 < arr.length && arr[i] === arr[i + 1]) {
         const val = arr[i] * 2;
         merged.push(val);
+        mergePositions.push(merged.length - 1);
         points += val;
         i++; // 跳过下一个
       } else {
@@ -104,7 +129,7 @@
     }
 
     while (merged.length < SIZE) merged.push(0);
-    return { result: merged, points };
+    return { result: merged, points, mergePositions };
   }
 
   // 移动方向处理
@@ -113,40 +138,45 @@
 
     let moved = false;
     let totalPoints = 0;
+    mergedTiles.clear();
 
     if (direction === 'left') {
       for (let r = 0; r < SIZE; r++) {
-        const { result, points } = slideRow(grid[r]);
+        const { result, points, mergePositions } = slideRow(grid[r]);
         if (grid[r].join(',') !== result.join(',')) moved = true;
         grid[r] = result;
         totalPoints += points;
+        mergePositions.forEach(c => mergedTiles.add(`${r},${c}`));
       }
     } else if (direction === 'right') {
       for (let r = 0; r < SIZE; r++) {
         const reversed = [...grid[r]].reverse();
-        const { result, points } = slideRow(reversed);
+        const { result, points, mergePositions } = slideRow(reversed);
         const final = result.reverse();
         if (grid[r].join(',') !== final.join(',')) moved = true;
         grid[r] = final;
         totalPoints += points;
+        mergePositions.forEach(pos => mergedTiles.add(`${r},${SIZE - 1 - pos}`));
       }
     } else if (direction === 'up') {
       for (let c = 0; c < SIZE; c++) {
         const col = [grid[0][c], grid[1][c], grid[2][c], grid[3][c]];
-        const { result, points } = slideRow(col);
+        const { result, points, mergePositions } = slideRow(col);
         if (col.join(',') !== result.join(',')) moved = true;
         for (let r = 0; r < SIZE; r++) grid[r][c] = result[r];
         totalPoints += points;
+        mergePositions.forEach(r => mergedTiles.add(`${r},${c}`));
       }
     } else if (direction === 'down') {
       for (let c = 0; c < SIZE; c++) {
         const col = [grid[3][c], grid[2][c], grid[1][c], grid[0][c]];
-        const { result, points } = slideRow(col);
+        const { result, points, mergePositions } = slideRow(col);
         const final = result.reverse();
         const origCol = [grid[0][c], grid[1][c], grid[2][c], grid[3][c]];
         if (origCol.join(',') !== final.join(',')) moved = true;
         for (let r = 0; r < SIZE; r++) grid[r][c] = final[r];
         totalPoints += points;
+        mergePositions.forEach(pos => mergedTiles.add(`${SIZE - 1 - pos},${c}`));
       }
     }
 
@@ -159,7 +189,7 @@
       if (checkGameOver()) {
         gameOver = true;
         finalScoreEl.textContent = score;
-        overlayEl.classList.add('active');
+        setTimeout(() => overlayEl.classList.add('active'), 400);
       }
     }
   }
