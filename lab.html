@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工具箱 — Casey</title>
+  <meta name="description" content="嵌入式开发实用工具与趣味小游戏 — 进制转换、CRC 校验、串口调试、2048、贪吃蛇">
+  <meta name="theme-color" content="#0a0e1a">
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/lab.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a class="nav-logo" href="index.html">Casey</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="index.html#about">关于</a></li>
+        <li><a href="index.html#projects">项目</a></li>
+        <li><a href="blog.html">博客</a></li>
+        <li><a href="lab.html" class="active">工具箱</a></li>
+        <li><a href="index.html#contact">联系</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">
+          <span class="theme-icon">🌙</span>
+        </button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="打开菜单">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header class="lab-header">
+    <div class="container">
+      <h1 class="reveal">🧰 工具箱</h1>
+      <p class="reveal">嵌入式开发实用工具与趣味小游戏</p>
+    </div>
+  </header>
+
+  <!-- Tools Section -->
+  <section class="lab-section">
+    <div class="container">
+      <h2 class="lab-section-title reveal">
+        <span class="emoji">🔧</span> 实用工具
+      </h2>
+      <div class="lab-grid stagger-children">
+        <!-- 进制转换器 -->
+        <a href="lab/converter.html" class="lab-card" id="lab-converter">
+          <span class="lab-card-icon">🔢</span>
+          <h3>进制转换器</h3>
+          <p>Hex / Dec / Bin / Oct / ASCII 多进制实时互转，支持批量字节输入，嵌入式开发日常必备。</p>
+          <span class="lab-card-badge">即开即用</span>
+        </a>
+
+        <!-- CRC 校验 -->
+        <a href="lab/crc.html" class="lab-card" id="lab-crc">
+          <span class="lab-card-icon">🔐</span>
+          <h3>CRC 校验计算</h3>
+          <p>支持 CRC-8/16/32 等常用算法，自定义多项式参数，适合通信协议调试与数据完整性校验。</p>
+          <span class="lab-card-badge">即开即用</span>
+        </a>
+
+        <!-- 串口调试 -->
+        <a href="lab/serial.html" class="lab-card" id="lab-serial">
+          <span class="lab-card-icon">🔌</span>
+          <h3>串口在线调试</h3>
+          <p>基于 Web Serial API 的在线串口终端，直接在浏览器中连接硬件设备进行数据收发与调试。</p>
+          <span class="lab-card-badge">⚡ Chrome / Edge</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Games Section -->
+  <section class="lab-section" style="padding-top: 0;">
+    <div class="container">
+      <h2 class="lab-section-title reveal">
+        <span class="emoji">🎮</span> 小游戏
+      </h2>
+      <div class="lab-grid stagger-children">
+        <!-- 2048 -->
+        <a href="lab/game-2048.html" class="lab-card" id="lab-2048">
+          <span class="lab-card-icon">🧩</span>
+          <h3>2048</h3>
+          <p>经典数字合并游戏，用方向键滑动合并相同数字方块，挑战你的最高分！</p>
+          <span class="lab-card-badge">🎯 键盘 + 触摸</span>
+        </a>
+
+        <!-- 贪吃蛇 -->
+        <a href="lab/game-snake.html" class="lab-card" id="lab-snake">
+          <span class="lab-card-icon">🐍</span>
+          <h3>贪吃蛇</h3>
+          <p>电路板主题的经典贪吃蛇，绿色 PCB 风格画面，看看你能吃到多长！</p>
+          <span class="lab-card-badge">🎯 键盘 + 触摸</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 Casey. All rights reserved.</p>
+        <p style="font-family: var(--font-mono); font-size: var(--fs-xs);">Code is cheap. Show me the prompt.</p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="back-to-top" aria-label="回到顶部">↑</button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

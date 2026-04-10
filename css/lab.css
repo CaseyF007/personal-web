@@ -1,0 +1,442 @@
+/* ============================================
+   LAB / 工具箱 — 页面样式
+   ============================================ */
+
+/* ---------- Lab Header ---------- */
+.lab-header {
+  padding: calc(var(--nav-height) + var(--space-16)) 0 var(--space-12);
+  text-align: center;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+.lab-header h1 {
+  font-size: var(--fs-5xl);
+  margin-bottom: var(--space-4);
+  background: var(--accent-gradient);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.lab-header p {
+  font-size: var(--fs-lg);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ---------- Lab Grid — 工具卡片列表 ---------- */
+.lab-section {
+  padding: var(--space-16) 0;
+}
+.lab-section-title {
+  font-size: var(--fs-2xl);
+  margin-bottom: var(--space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.lab-section-title .emoji {
+  font-size: var(--fs-3xl);
+}
+
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+
+.lab-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+}
+.lab-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent-gradient);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+.lab-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-color-hover);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+.lab-card:hover::before { opacity: 1; }
+
+.lab-card-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-4);
+  display: inline-block;
+}
+.lab-card h3 {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-2);
+}
+.lab-card p {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  line-height: var(--lh-relaxed);
+}
+.lab-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-4);
+  padding: var(--space-1) var(--space-3);
+  background: rgba(59,130,246,0.1);
+  color: var(--accent-primary);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+}
+
+/* ---------- Tool Page Layout ---------- */
+.tool-page {
+  padding: calc(var(--nav-height) + var(--space-8)) 0 var(--space-16);
+  min-height: 100vh;
+}
+.tool-header {
+  margin-bottom: var(--space-8);
+}
+.tool-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+}
+.tool-breadcrumb a {
+  color: var(--accent-primary);
+  transition: opacity var(--transition-fast);
+}
+.tool-breadcrumb a:hover { opacity: 0.8; }
+
+.tool-title {
+  font-size: var(--fs-3xl);
+  margin-bottom: var(--space-2);
+}
+.tool-desc {
+  font-size: var(--fs-base);
+  color: var(--text-secondary);
+}
+
+/* ---------- Tool Panel (通用工具面板) ---------- */
+.tool-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+}
+.tool-panel-title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ---------- Tool Input ---------- */
+.tool-input-group {
+  margin-bottom: var(--space-4);
+}
+.tool-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+.tool-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+  transition: all var(--transition-fast);
+}
+.tool-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+.tool-input::placeholder { color: var(--text-tertiary); }
+
+.tool-select {
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: var(--space-10);
+}
+.tool-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+/* ---------- Terminal / 终端显示区 ---------- */
+.terminal {
+  background: #0d1117;
+  border: 1px solid rgba(148,163,184,0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: #c9d1d9;
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.terminal::-webkit-scrollbar { width: 6px; }
+.terminal::-webkit-scrollbar-track { background: transparent; }
+.terminal::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.2); border-radius: 3px; }
+
+.terminal .tx { color: #58a6ff; }
+.terminal .rx { color: #7ee787; }
+.terminal .sys { color: #d2a8ff; }
+.terminal .err { color: #ff7b72; }
+.terminal .timestamp { color: #8b949e; font-size: var(--fs-xs); }
+
+/* ---------- Tool Actions Bar ---------- */
+.tool-actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ---------- Tool Row ---------- */
+.tool-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+@media (max-width: 768px) {
+  .tool-row { grid-template-columns: 1fr; }
+}
+
+/* ---------- Converter Grid ---------- */
+.converter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+@media (max-width: 640px) {
+  .converter-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Serial Config Bar ---------- */
+.serial-config {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+.serial-config-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.serial-config-item label {
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+/* ---------- Status Indicator ---------- */
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: var(--space-1);
+}
+.status-dot.connected { background: #7ee787; box-shadow: 0 0 6px rgba(126,231,135,0.5); }
+.status-dot.disconnected { background: #ff7b72; }
+
+/* ---------- Game Container ---------- */
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+}
+.game-info {
+  display: flex;
+  gap: var(--space-6);
+  align-items: center;
+}
+.game-score {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2) var(--space-6);
+  text-align: center;
+}
+.game-score-label {
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.game-score-value {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+/* 2048 Grid */
+.grid-2048 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-xl);
+  padding: 12px;
+  width: min(400px, 90vw);
+  aspect-ratio: 1;
+  touch-action: none;
+}
+.tile-2048 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-heading);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-2xl);
+  transition: all 150ms ease;
+  user-select: none;
+}
+
+/* 贪吃蛇 Canvas */
+.snake-canvas {
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: #0d1117;
+  touch-action: none;
+}
+
+/* 移动端虚拟方向键 */
+.virtual-dpad {
+  display: none;
+  grid-template-areas:
+    ". up ."
+    "left . right"
+    ". down .";
+  grid-template-columns: repeat(3, 64px);
+  grid-template-rows: repeat(3, 64px);
+  gap: 4px;
+  margin-top: var(--space-4);
+}
+.dpad-btn {
+  width: 64px; height: 64px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: var(--fs-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.dpad-btn:active {
+  background: var(--accent-primary);
+  color: #fff;
+  transform: scale(0.95);
+}
+.dpad-up { grid-area: up; }
+.dpad-down { grid-area: down; }
+.dpad-left { grid-area: left; }
+.dpad-right { grid-area: right; }
+
+@media (max-width: 768px) {
+  .virtual-dpad { display: grid; }
+}
+
+/* ---------- Game Over Overlay ---------- */
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10,14,26,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  border-radius: var(--radius-xl);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+.game-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+.game-overlay h2 {
+  font-size: var(--fs-4xl);
+  background: var(--accent-gradient);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ---------- Compatibility Notice ---------- */
+.compat-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-6);
+  font-size: var(--fs-sm);
+  color: #f59e0b;
+}
+.compat-notice .icon { font-size: var(--fs-xl); flex-shrink: 0; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 640px) {
+  .lab-grid {
+    grid-template-columns: 1fr;
+  }
+  .lab-header h1 { font-size: var(--fs-4xl); }
+  .tool-title { font-size: var(--fs-2xl); }
+  .tile-2048 { font-size: var(--fs-lg); }
+}

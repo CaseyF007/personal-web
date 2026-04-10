@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRC 校验计算 — Casey 工具箱</title>
+  <meta name="description" content="CRC-8/16/32 校验计算器，支持自定义多项式参数">
+  <meta name="theme-color" content="#0a0e1a">
+  <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/index.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/lab.css">
+</head>
+<body>
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a class="nav-logo" href="../index.html">Casey</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../index.html#about">关于</a></li>
+        <li><a href="../index.html#projects">项目</a></li>
+        <li><a href="../blog.html">博客</a></li>
+        <li><a href="../lab.html" class="active">工具箱</a></li>
+        <li><a href="../index.html#contact">联系</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">
+          <span class="theme-icon">🌙</span>
+        </button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="打开菜单">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="tool-page">
+    <div class="container">
+      <div class="tool-breadcrumb">
+        <a href="../lab.html">🧰 工具箱</a><span>/</span><span>CRC 校验计算</span>
+      </div>
+      <div class="tool-header">
+        <h1 class="tool-title">🔐 CRC 校验计算</h1>
+        <p class="tool-desc">选择 CRC 算法，输入数据，实时计算校验值。</p>
+      </div>
+
+      <!-- 算法选择 -->
+      <div class="tool-panel">
+        <h3 class="tool-panel-title">⚙️ 算法参数</h3>
+        <div class="serial-config">
+          <div class="serial-config-item">
+            <label>CRC 算法</label>
+            <select class="tool-select" id="crc-algo">
+              <option value="crc8">CRC-8</option>
+              <option value="crc16_modbus" selected>CRC-16/Modbus</option>
+              <option value="crc16_ccitt">CRC-16/CCITT-FALSE</option>
+              <option value="crc16_xmodem">CRC-16/XMODEM</option>
+              <option value="crc32">CRC-32</option>
+            </select>
+          </div>
+          <div class="serial-config-item">
+            <label>输入格式</label>
+            <select class="tool-select" id="crc-input-mode">
+              <option value="hex" selected>Hex</option>
+              <option value="ascii">ASCII</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 输入区 -->
+      <div class="tool-panel">
+        <h3 class="tool-panel-title">📥 输入数据</h3>
+        <div class="tool-input-group">
+          <input class="tool-input" type="text" id="crc-data" placeholder="Hex 模式: 01 03 00 00 00 0A" spellcheck="false" autocomplete="off">
+        </div>
+        <div class="tool-actions">
+          <button class="btn btn-primary btn-sm" id="btn-calc" type="button">计算 CRC</button>
+          <button class="btn btn-outline btn-sm" id="btn-crc-clear" type="button">清空</button>
+        </div>
+      </div>
+
+      <!-- 结果区 -->
+      <div class="tool-panel">
+        <h3 class="tool-panel-title">📊 计算结果</h3>
+        <div class="tool-row">
+          <div>
+            <div class="tool-input-group">
+              <label class="tool-label">CRC 值 (HEX)</label>
+              <input class="tool-input" type="text" id="crc-result-hex" readonly style="font-size: var(--fs-2xl); font-weight: var(--fw-bold); color: var(--accent-primary);">
+            </div>
+          </div>
+          <div>
+            <div class="tool-input-group">
+              <label class="tool-label">CRC 值 (DEC)</label>
+              <input class="tool-input" type="text" id="crc-result-dec" readonly>
+            </div>
+          </div>
+        </div>
+        <div id="crc-params" style="margin-top: var(--space-4); font-size: var(--fs-xs); color: var(--text-tertiary); font-family: var(--font-mono);">
+          <!-- 算法参数显示 -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 Casey. All rights reserved.</p>
+        <p style="font-family: var(--font-mono); font-size: var(--fs-xs);">Code is cheap. Show me the prompt.</p>
+      </div>
+    </div>
+  </footer>
+  <button class="back-to-top" id="back-to-top" aria-label="回到顶部">↑</button>
+  <script src="../js/crc.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>串口在线调试 — Casey 工具箱</title>
+  <meta name="description" content="基于 Web Serial API 的在线串口终端，直接在浏览器中调试嵌入式设备">
+  <meta name="theme-color" content="#0a0e1a">
+  <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/index.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/lab.css">
+</head>
+<body>
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a class="nav-logo" href="../index.html">Casey</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../index.html#about">关于</a></li>
+        <li><a href="../index.html#projects">项目</a></li>
+        <li><a href="../blog.html">博客</a></li>
+        <li><a href="../lab.html" class="active">工具箱</a></li>
+        <li><a href="../index.html#contact">联系</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">
+          <span class="theme-icon">🌙</span>
+        </button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="打开菜单">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="tool-page">
+    <div class="container">
+      <div class="tool-breadcrumb">
+        <a href="../lab.html">🧰 工具箱</a><span>/</span><span>串口在线调试</span>
+      </div>
+      <div class="tool-header">
+        <h1 class="tool-title">🔌 串口在线调试</h1>
+        <p class="tool-desc">基于 Web Serial API，在浏览器中直接连接串口设备进行数据收发。</p>
+      </div>
+
+      <!-- 浏览器兼容性提示 -->
+      <div class="compat-notice" id="compat-notice" style="display:none;">
+        <span class="icon">⚠️</span>
+        <div>
+          <strong>浏览器不支持 Web Serial API</strong><br>
+          请使用 Chrome 89+ 或 Edge 89+ 浏览器访问此工具。
+        </div>
+      </div>
+
+      <!-- 连接配置 -->
+      <div class="tool-panel">
+        <h3 class="tool-panel-title">⚙️ 串口配置</h3>
+        <div class="serial-config">
+          <div class="serial-config-item">
+            <label>波特率</label>
+            <select class="tool-select" id="baudRate">
+              <option value="9600">9600</option>
+              <option value="19200">19200</option>
+              <option value="38400">38400</option>
+              <option value="57600">57600</option>
+              <option value="115200" selected>115200</option>
+              <option value="230400">230400</option>
+              <option value="460800">460800</option>
+              <option value="921600">921600</option>
+            </select>
+          </div>
+          <div class="serial-config-item">
+            <label>数据位</label>
+            <select class="tool-select" id="dataBits">
+              <option value="7">7</option>
+              <option value="8" selected>8</option>
+            </select>
+          </div>
+          <div class="serial-config-item">
+            <label>停止位</label>
+            <select class="tool-select" id="stopBits">
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+            </select>
+          </div>
+          <div class="serial-config-item">
+            <label>校验位</label>
+            <select class="tool-select" id="parity">
+              <option value="none" selected>None</option>
+              <option value="even">Even</option>
+              <option value="odd">Odd</option>
+            </select>
+          </div>
+          <div class="serial-config-item" style="align-self: flex-end;">
+            <button class="btn btn-primary btn-sm" id="btn-connect" type="button">连接</button>
+          </div>
+        </div>
+        <div style="margin-top: var(--space-3); font-size: var(--fs-sm);">
+          <span class="status-dot disconnected" id="status-dot"></span>
+          <span id="status-text" style="color: var(--text-tertiary);">未连接</span>
+        </div>
+      </div>
+
+      <!-- 接收区 -->
+      <div class="tool-panel">
+        <h3 class="tool-panel-title">📥 接收数据</h3>
+        <div class="tool-actions" style="margin-bottom: var(--space-3);">
+          <select class="tool-select" id="rx-display-mode">
+            <option value="ascii" selected>ASCII</option>
+            <option value="hex">HEX</option>
+          </select>
+          <label style="font-size: var(--fs-sm); display: flex; align-items: center; gap: var(--space-2);">
+            <input type="checkbox" id="rx-timestamp"> 显示时间戳
+          </label>
+          <label style="font-size: var(--fs-sm); display: flex; align-items: center; gap: var(--space-2);">
+            <input type="checkbox" id="rx-autoscroll" checked> 自动滚动
+          </label>
+          <button class="btn btn-outline btn-sm" id="btn-clear-rx" type="button">清空</button>
+        </div>
+        <div class="terminal" id="rx-terminal"></div>
+        <div style="margin-top: var(--space-2); font-size: var(--fs-xs); color: var(--text-tertiary); font-family: var(--font-mono);">
+          接收: <span id="rx-count">0</span> 字节
+        </div>
+      </div>
+
+      <!-- 发送区 -->
+      <div class="tool-panel">
+        <h3 class="tool-panel-title">📤 发送数据</h3>
+        <div class="tool-actions" style="margin-bottom: var(--space-3);">
+          <select class="tool-select" id="tx-mode">
+            <option value="ascii" selected>ASCII</option>
+            <option value="hex">HEX</option>
+          </select>
+          <label style="font-size: var(--fs-sm); display: flex; align-items: center; gap: var(--space-2);">
+            <input type="checkbox" id="tx-newline" checked> 追加换行 (\r\n)
+          </label>
+        </div>
+        <div style="display: flex; gap: var(--space-3);">
+          <input class="tool-input" type="text" id="tx-input" placeholder="输入要发送的数据..." style="flex: 1;" spellcheck="false" autocomplete="off">
+          <button class="btn btn-primary btn-sm" id="btn-send" type="button" disabled>发送</button>
+        </div>
+        <div style="margin-top: var(--space-2); font-size: var(--fs-xs); color: var(--text-tertiary); font-family: var(--font-mono);">
+          发送: <span id="tx-count">0</span> 字节
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 Casey. All rights reserved.</p>
+        <p style="font-family: var(--font-mono); font-size: var(--fs-xs);">Code is cheap. Show me the prompt.</p>
+      </div>
+    </div>
+  </footer>
+  <button class="back-to-top" id="back-to-top" aria-label="回到顶部">↑</button>
+  <script src="../js/serial.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>

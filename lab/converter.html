@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>进制转换器 — Casey 工具箱</title>
+  <meta name="description" content="Hex / Dec / Bin / Oct / ASCII 多进制实时互转工具">
+  <meta name="theme-color" content="#0a0e1a">
+  <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/index.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/lab.css">
+</head>
+<body>
+  <!-- 导航 -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a class="nav-logo" href="../index.html">Casey</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../index.html#about">关于</a></li>
+        <li><a href="../index.html#projects">项目</a></li>
+        <li><a href="../blog.html">博客</a></li>
+        <li><a href="../lab.html" class="active">工具箱</a></li>
+        <li><a href="../index.html#contact">联系</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">
+          <span class="theme-icon">🌙</span>
+        </button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="打开菜单">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="tool-page">
+    <div class="container">
+      <!-- 面包屑 -->
+      <div class="tool-breadcrumb">
+        <a href="../lab.html">🧰 工具箱</a>
+        <span>/</span>
+        <span>进制转换器</span>
+      </div>
+
+      <div class="tool-header">
+        <h1 class="tool-title">🔢 进制转换器</h1>
+        <p class="tool-desc">编辑任一输入框，其他进制将实时联动转换。支持空格分隔的批量字节输入。</p>
+      </div>
+
+      <!-- 转换面板 -->
+      <div class="tool-panel">
+        <div class="converter-grid">
+          <div class="tool-input-group">
+            <label class="tool-label" for="hex-input">HEX (十六进制)</label>
+            <input class="tool-input" type="text" id="hex-input" placeholder="例: 48 65 6C 6C 6F" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="tool-input-group">
+            <label class="tool-label" for="dec-input">DEC (十进制)</label>
+            <input class="tool-input" type="text" id="dec-input" placeholder="例: 72 101 108 108 111" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="tool-input-group">
+            <label class="tool-label" for="bin-input">BIN (二进制)</label>
+            <input class="tool-input" type="text" id="bin-input" placeholder="例: 01001000 01100101" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="tool-input-group">
+            <label class="tool-label" for="oct-input">OCT (八进制)</label>
+            <input class="tool-input" type="text" id="oct-input" placeholder="例: 110 145 154 154 157" spellcheck="false" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="tool-input-group" style="margin-top: var(--space-4);">
+          <label class="tool-label" for="ascii-input">ASCII / UTF-8 文本</label>
+          <input class="tool-input" type="text" id="ascii-input" placeholder="例: Hello" spellcheck="false" autocomplete="off">
+        </div>
+
+        <div class="tool-actions" style="margin-top: var(--space-4);">
+          <button class="btn btn-outline btn-sm" id="btn-clear" type="button">清空</button>
+          <button class="btn btn-outline btn-sm" id="btn-swap" type="button">大小写切换</button>
+        </div>
+      </div>
+
+      <!-- 快速参考 -->
+      <div class="tool-panel">
+        <h3 class="tool-panel-title">📋 常用 ASCII 快速参考</h3>
+        <div class="terminal" id="ascii-table" style="min-height: auto; max-height: 200px; font-size: var(--fs-xs);">
+Char | Hex | Dec | Bin       Char | Hex | Dec | Bin
+-----|-----|-----|------     ------|-----|-----|------
+NUL  | 00  |  0  | 00000000  SP   | 20  | 32  | 00100000
+LF   | 0A  | 10  | 00001010  0    | 30  | 48  | 00110000
+CR   | 0D  | 13  | 00001101  A    | 41  | 65  | 01000001
+ESC  | 1B  | 27  | 00011011  a    | 61  | 97  | 01100001
+DEL  | 7F  | 127 | 01111111  ~    | 7E  | 126 | 01111110
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 Casey. All rights reserved.</p>
+        <p style="font-family: var(--font-mono); font-size: var(--fs-xs);">Code is cheap. Show me the prompt.</p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="back-to-top" aria-label="回到顶部">↑</button>
+  <script src="../js/converter.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>
