@@ -118,6 +118,12 @@
           <label style="font-size: var(--fs-sm); display: flex; align-items: center; gap: var(--space-2);">
             <input type="checkbox" id="rx-autoscroll" checked> 自动滚动
           </label>
+          <label style="font-size: var(--fs-sm); display: flex; align-items: center; gap: var(--space-2);" title="同一帧数据的合并超时，超过此间隔的数据将显示为新的一行">
+            合并间隔
+            <input class="tool-input" type="number" id="rx-merge-interval" value="50" min="0" max="1000" step="10"
+              style="width: 72px; padding: var(--space-1) var(--space-2); font-size: var(--fs-xs); text-align: center;">
+            <span style="color: var(--text-tertiary);">ms</span>
+          </label>
           <button class="btn btn-outline btn-sm" id="btn-clear-rx" type="button">清空</button>
         </div>
         <div class="terminal" id="rx-terminal"></div>

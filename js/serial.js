@@ -137,20 +137,54 @@
   }
 
   /**
-   * 处理接收到的数据
+   * 接收缓冲区 — 合并短时间内到达的多个 USB chunk
+   * USB CDC 会将 MCU 一次发送的数据拆成多个小包，
+   * 通过超时合并机制将它们重新拼成完整的一帧。
    */
+  let rxBuffer = [];       // 缓冲的字节数组
+  let rxFlushTimer = null;  // 合并定时器
+
   function handleReceivedData(value) {
     rxByteCount += value.length;
     rxCountEl.textContent = rxByteCount;
 
+    // 将数据追加到缓冲区
+    rxBuffer.push(...value);
+
+    // 读取用户设置的合并间隔
+    const mergeInterval = parseInt(document.getElementById('rx-merge-interval').value) || 50;
+
+    // 如果间隔为 0，立即输出（不合并）
+    if (mergeInterval === 0) {
+      flushRxBuffer();
+      return;
+    }
+
+    // 重置定时器 — 如果在间隔内收到新数据，继续等待
+    if (rxFlushTimer) {
+      clearTimeout(rxFlushTimer);
+    }
+    rxFlushTimer = setTimeout(flushRxBuffer, mergeInterval);
+  }
+
+  /**
+   * 将缓冲区数据一次性输出到终端
+   */
+  function flushRxBuffer() {
+    rxFlushTimer = null;
+    if (rxBuffer.length === 0) return;
+
+    const bytes = new Uint8Array(rxBuffer);
+    rxBuffer = [];
+
     const displayMode = document.getElementById('rx-display-mode').value;
     let text;
     if (displayMode === 'hex') {
-      text = Array.from(value)
+      text = Array.from(bytes)
         .map(b => b.toString(16).toUpperCase().padStart(2, '0'))
         .join(' ');
     } else {
-      text = new TextDecoder().decode(value);
+      text = new TextDecoder().decode(bytes);
     }
     appendToTerminal(text, 'rx');
   }
@@ -160,6 +194,10 @@
    */
   async function closePort() {
     keepReading = false;
+
+    // 先刷新缓冲区中的残余数据
+    if (rxFlushTimer) clearTimeout(rxFlushTimer);
+    flushRxBuffer();
 
     // 1. 取消正在进行的读取，让 readUntilClosed 退出
     if (reader) {
@@ -324,6 +362,9 @@
     txByteCount = 0;
     rxCountEl.textContent = '0';
     txCountEl.textContent = '0';
+    // 清理缓冲区
+    if (rxFlushTimer) clearTimeout(rxFlushTimer);
+    rxBuffer = [];
   });
 
   // 页面关闭时断开
