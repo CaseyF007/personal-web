@@ -86,22 +86,61 @@
     elements.forEach(el => observer.observe(el));
   }
 
-  /* ---- Back to Top ---- */
+  /* ---- Back to Top（进度环 + 百分比 / 箭头切换） ---- */
   function initBackToTop() {
     const btn = document.getElementById('back-to-top');
     if (!btn) return;
 
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 600) {
+    const ringFill = btn.querySelector('.btt-ring-fill');
+    const percentEl = document.getElementById('btt-percent');
+    const CIRCUMFERENCE = 2 * Math.PI * 21; // ≈ 131.95，与 CSS 中一致
+    let scrollTimer = null;
+
+    /**
+     * 计算页面滚动百分比并更新进度环
+     */
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight <= 0) return;
+
+      const percent = Math.min(Math.round((scrollTop / docHeight) * 100), 100);
+
+      // 更新 SVG 圆环 offset
+      const offset = CIRCUMFERENCE - (percent / 100) * CIRCUMFERENCE;
+      if (ringFill) ringFill.style.strokeDashoffset = offset;
+
+      // 更新百分比文字
+      if (percentEl) percentEl.textContent = percent + '%';
+
+      // 显示 / 隐藏按钮（页面顶部隐藏）
+      if (scrollTop > 100) {
         btn.classList.add('visible');
       } else {
         btn.classList.remove('visible');
       }
+    }
+
+    window.addEventListener('scroll', () => {
+      updateProgress();
+
+      // 滚动时显示百分比
+      btn.classList.add('show-percent');
+
+      // 重置计时器 — 停止滚动 500ms 后切回箭头
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        btn.classList.remove('show-percent');
+      }, 500);
     }, { passive: true });
 
+    // 点击回到顶部
     btn.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
+    // 初始状态
+    updateProgress();
   }
 
   /* ---- Skills Grid ---- */
